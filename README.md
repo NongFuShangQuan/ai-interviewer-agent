@@ -220,6 +220,11 @@ pytest tests/test_evaluator.py
 pytest tests/test_guard.py
 pytest tests/test_rag.py
 ```
+<img width="2547" height="700" alt="c35f0ad2-ffb2-44ca-a5d2-9f8867fbdb91" src="https://github.com/user-attachments/assets/5e67fcd3-5afc-4057-b664-fd571125a799" />
+<img width="2560" height="942" alt="e482cc5f-90ff-4c4d-9fd9-2cf02d3335c8" src="https://github.com/user-attachments/assets/398fc653-1eb7-4733-9f8a-040c0039a9e8" />
+<img width="1877" height="891" alt="c2e40e6e-75ed-46dd-a041-486e63a45b07" src="https://github.com/user-attachments/assets/90f99290-97bf-4a3c-9196-278a5691a63c" />
+<img width="1908" height="879" alt="8dac7781-3e02-4e28-a98d-5874b85f95e0" src="https://github.com/user-attachments/assets/49517b7f-f896-4b2c-a597-a4b8a745fb02" />
+
 
 ## 许可证
 
