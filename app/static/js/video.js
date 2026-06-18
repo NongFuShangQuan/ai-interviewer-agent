@@ -646,6 +646,13 @@ function handleMsg(msg) {
         addSys(d.message || '系统消息');
     } else if (t === 'round_result') {
         addSys('\u7b2c' + curRound + '\u8f6e\u8bc4\u4f30\u5b8c\u6210');
+    } else if (t === 'round_end') {
+        addSys('\u7b2c' + (d.round || curRound) + '\u8f6e\u7ed3\u675f');
+        setDHState('thinking');
+        setStatus('AI\u6b63\u5728\u51c6\u5907\u4e0b\u4e00\u4e2a\u95ee\u9898...');
+        hideInput();
+    } else if (t === 'status') {
+        addSys(d.message || '\u7cfb\u7edf\u6d88\u606f');
     } else if (t === 'interview_complete' || t === 'complete') {
         setDHState('idle');
         setStatus('\u9762\u8bd5\u5df2\u7ed3\u675f');
@@ -753,7 +760,16 @@ function speak(text, cb) {
     audio.src = '/api/tts?text=' + encodeURIComponent(text) + '&voice=xiaoxiao&rate=-5%25';
     var p = audio.play();
     if (p !== undefined) p.catch(function(e) { console.warn('TTS play blocked:', e.message); finishCb(); });
-    setTimeout(function() { if (!done) { done = true; try { audio.pause(); } catch(e) {} if (cb) cb(); } }, 60000);
+    // Safety timeout: 30s max for TTS playback
+    setTimeout(function() { if (!done) { done = true; try { audio.pause(); } catch(e) {} if (cb) cb(); } }, 30000);
+    // Loading timeout: if audio doesn't start playing within 8s, skip
+    var loadTimer = setTimeout(function() {
+        if (!done && audio.readyState < 2) {
+            console.warn('TTS load timeout - skipping');
+            done = true; try { audio.pause(); } catch(e) {} if (cb) cb();
+        }
+    }, 8000);
+    audio.addEventListener('playing', function() { clearTimeout(loadTimer); }, { once: true });
 }
 
 // ==================== \ud83c\udfa4 \u8bed\u97f3 ====================
@@ -893,7 +909,7 @@ function startTimer() {
 function addAI(text, round) {
     var el = _g('chatScroll'); if (!el) return;
     var d = document.createElement('div'); d.className = 'cmsg';
-function addAI(text, round) { var el = _g('chatScroll'); if (!el) return; var d = document.createElement('div'); d.className = 'cmsg'; d.innerHTML = '<div class="cmsg-head"><div class="cmsg-avatar ai">BOT</div><span class="cmsg-name ai">\u5c0f\u667a</span><span class="cmsg-round">Round ' + round + '</span></div><div class="cmsg-body ai streaming" id="s-' + round + '"></div>'; el.appendChild(d); streamText('s-' + round, text, function() { el.scrollTop = el.scrollHeight; }); el.scrollTop = el.scrollHeight; }
+    d.innerHTML = '<div class="cmsg-head"><div class="cmsg-avatar ai">BOT</div><span class="cmsg-name ai">\u5c0f\u667a</span><span class="cmsg-round">Round ' + round + '</span></div><div class="cmsg-body ai streaming" id="s-' + round + '"></div>';
     el.appendChild(d);
     streamText('s-' + round, text, function() { el.scrollTop = el.scrollHeight; });
     el.scrollTop = el.scrollHeight;
@@ -1019,13 +1035,18 @@ function setVADState(state, label) {
 }
 
 function skipTTS() {
-    if (typeof _ttsMuted !== 'undefined') { _ttsMuted = !_ttsMuted; }
+    _ttsMuted = !_ttsMuted;
+    _skipTTS = _ttsMuted;
     var sb = _g('skipTTSBtn');
     if (sb) {
         if (_ttsMuted) {
-            sb.innerHTML = '\u25b6 恢复语音';
+            if (synth) synth.cancel();
+            try { if (_ttsAudio) { _ttsAudio.pause(); _ttsAudio.currentTime = 0; } } catch(e) {}
+            sb.innerHTML = '\u25b6 \u6062\u590d\u8bed\u97f3';
+            sb.style.background = 'rgba(34,197,94,0.85)';
         } else {
-            sb.innerHTML = '\u23f9 跳过语音';
+            sb.innerHTML = '\u23f9 \u8df3\u8fc7\u8bed\u97f3';
+            sb.style.background = 'rgba(99,102,241,0.85)';
         }
     }
 }

@@ -1,182 +1,226 @@
 # AI Interviewer Agent
 
-基于 LangGraph 多 Agent 协作的 AI 智能面试官系统，支持文本/视频/实时语音三种面试模式，集成 RAG 检索增强、数字人交互、六维评估报告等能力。
+一个基于多 Agent 架构的 AI 智能面试系统，支持文字面试和视频面试两种模式。系统集成了 RAG 知识库增强、ToolCallGuard 循环保护、实时语音合成（TTS）和语音识别（STT），可自动完成多轮结构化面试并生成综合评估报告。
 
 ## 功能特性
 
-- **多 Agent 协作** — LangGraph 编排面试官、评估官、协调器三个 Agent，自动完成提问-评估-追问闭环
-- **三种面试模式** — 文本聊天、视频数字人、实时语音面试，覆盖不同场景需求
-- **RAG 检索增强** — 题库检索、简历深挖、评估参考、岗位知识四路召回，提升问答质量
-- **六维评估报告** — 技术能力、沟通表达、问题解决、文化匹配、经验匹配、综合评分，自动生成录用建议
-- **数字人交互** — Canvas 渲染虚拟形象，支持呼吸/眨眼/嘴型动画 + 摄像头眼球追踪
-- **语音能力** — Edge TTS 神经语音合成 + Google STT 语音识别，支持多种中文音色
-- **管理后台** — SPA 仪表盘，面试创建/记录查看/系统监控/RAG 知识库管理/数据导出
-- **安全防护** — ToolCallGuard 工具调用守卫，循环检测、迭代限制、快速熔断、降级兜底
+- **多轮结构化面试**：可配置面试轮数，AI 面试官自动提问、追问、评估
+- **两种面试模式**：文字面试（WebSocket）和视频面试（Socket.IO + Canvas 虚拟人）
+- **RAG 知识增强**：题库检索、简历深挖、技术知识库、历史评估参考
+- **ToolCallGuard**：防止 Agent 陷入无限循环，支持降级和负样本回流
+- **实时语音**：Edge TTS 神经语音合成 + Google STT 语音识别
+- **综合评估报告**：6 维度评分 + 录用建议，支持 JSON / CSV / HTML 导出
+- **管理后台**：创建面试、查看面试列表、面试详情、Guard 日志、RAG 状态
 
 ## 技术栈
 
-| 层级 | 技术 |
+| 层次 | 技术 |
 |------|------|
-| 后端框架 | FastAPI + Uvicorn + python-socketio |
-| AI 编排 | LangChain + LangGraph + ChatOpenAI |
-| 数据库 | SQLAlchemy (async) + aiosqlite (SQLite) |
-| 语音 | edge-tts (TTS) + speech_recognition (STT) |
-| 前端 | Jinja2 模板 + 原生 JS + Socket.IO |
-| 配置 | Pydantic Settings + .env |
-
-支持多种 LLM 提供商：SiliconFlow（默认）、OpenAI、DeepSeek、本地 Ollama。未配置 API Key 时自动降级为 Mock 模式。
+| 后端框架 | FastAPI + Uvicorn |
+| 实时通信 | python-socketio (Socket.IO) + WebSocket |
+| AI 框架 | LangChain + LangGraph |
+| LLM | OpenAI 兼容 API（支持 SiliconFlow / DeepSeek / 本地 Ollama 等） |
+| 数据库 | SQLite + SQLAlchemy (Async) |
+| 语音合成 | edge-tts (微软神经语音) |
+| 语音识别 | Google STT / 浏览器 Web Speech API |
+| 前端 | 原生 HTML/CSS/JS + Canvas 虚拟人 + Socket.IO Client |
 
 ## 项目结构
 
 ```
 AIInterview/
-├── main.py                         # FastAPI 入口 + Socket.IO ASGI 挂载
-├── run.py                          # 启动脚本
-├── requirements.txt                # Python 依赖
-├── .env.example                    # 环境变量模板
-│
 ├── app/
-│   ├── agents/                     # LangGraph 多 Agent 系统
-│   │   ├── coordinator.py          #   协调器：StateGraph 工作流编排
-│   │   ├── interviewer.py          #   面试官 Agent：题目生成 + RAG
-│   │   ├── evaluator.py            #   评估官 Agent：轮次评分 + 终面评估
-│   │   ├── guard.py                #   ToolCallGuard：循环检测 + 降级引擎
-│   │   └── state.py                #   状态定义：InterviewState + EvaluationResult
-│   │
-│   ├── api/                        # API 路由
-│   │   ├── admin.py                #   管理后台 CRUD、Guard 统计、RAG、导出
-│   │   ├── tts.py                  #   文本转语音 API（Edge TTS）
-│   │   └── stt.py                  #   语音转文字 API（Google STT）
-│   │
-│   ├── core/                       # 基础设施
-│   │   ├── config.py               #   Pydantic Settings 环境配置
-│   │   ├── database.py             #   SQLAlchemy 异步引擎 + 会话工厂
-│   │   └── cache.py                #   LLM 响应缓存（LRU + TTL + 磁盘持久化）
-│   │
-│   ├── data/                       # 静态数据
-│   │   ├── job_templates.json      #   岗位模板（技术/产品/设计/运营/市场/HR）
-│   │   └── rag/                    #   RAG 数据存储
-│   │       └── question_bank.json  #     40+ 面试题（覆盖 12 个技术方向）
-│   │
-│   ├── models/models.py            # ORM 模型（6 张表）
-│   ├── rag/                        # RAG 检索增强系统
-│   │   ├── manager.py              #   统一管理器单例
-│   │   ├── retrievers.py           #   4 个检索器：题库/简历/评估参考/知识库
-│   │   └── vectorstore.py          #   混合向量存储（Embedding API + TF-IDF 降级）
-│   │
-│   ├── realtime/socketio_server.py # Socket.IO 实时通信服务
-│   ├── services/                   # 业务服务
-│   │   ├── interview_service.py    #   面试 CRUD
-│   │   ├── email_service.py        #   SMTP 邀请邮件
-│   │   └── export_service.py       #   导出 JSON/CSV/HTML
-│   │
-│   ├── static/                     # 前端资源
-│   │   ├── css/                    #   样式
-│   │   ├── js/                     #   脚本（admin/interview/video/live/particles）
-│   │   └── images/digital_human/   #   数字人素材（idle/speaking/listening/thinking）
-│   │
-│   └── templates/                  # HTML 模板
-│       ├── admin.html              #   管理后台（SPA）
-│       ├── interview.html          #   文本面试
-│       ├── video_interview.html    #   视频面试（Canvas 数字人）
-│       ├── live_interview.html     #   实时语音面试
-│       └── result.html             #   结果页
-│
-└── tests/                          # 单元测试
-    ├── test_guard.py               #   Guard 系统测试
-    ├── test_evaluator.py           #   JSON 提取测试
-    ├── test_models.py              #   模型结构测试
-    ├── test_rag.py                 #   TF-IDF + Embedding 测试
-    └── test_state.py               #   状态定义测试
+│   ├── agents/           # AI Agent 层
+│   │   ├── interviewer.py   # 面试官 Agent - 生成面试问题
+│   │   ├── evaluator.py     # 评估 Agent - 实时评估和最终评估
+│   │   ├── coordinator.py   # 协调器 - LangGraph 工作流编排
+│   │   ├── guard.py         # ToolCallGuard - 循环保护和降级
+│   │   └── state.py         # LangGraph 状态定义
+│   ├── api/              # API 路由
+│   │   ├── admin.py         # 管理后台 API
+│   │   ├── interview_ws.py  # WebSocket 面试处理器
+│   │   ├── tts.py           # 语音合成 API (edge-tts)
+│   │   └── stt.py           # 语音识别 API (Google STT)
+│   ├── core/             # 核心配置
+│   │   ├── config.py        # 应用配置
+│   │   ├── database.py      # 数据库初始化
+│   │   └── cache.py         # LLM 响应缓存
+│   ├── data/             # 静态数据
+│   │   ├── rag/             # RAG 知识库 (题库/知识/评估参考)
+│   │   └── job_templates.json
+│   ├── models/           # 数据模型
+│   │   └── models.py        # SQLAlchemy ORM 模型
+│   ├── rag/              # RAG 检索层
+│   │   ├── manager.py       # RAG 管理器
+│   │   ├── retrievers.py    # 各类检索器
+│   │   └── vectorstore.py   # 向量存储
+│   ├── realtime/         # 实时通信
+│   │   └── socketio_server.py  # Socket.IO 面试服务器
+│   ├── services/         # 业务逻辑层
+│   │   ├── interview_service.py  # 面试业务逻辑
+│   │   ├── email_service.py      # 邮件邀请服务
+│   │   └── export_service.py     # 导出服务 (JSON/CSV/HTML)
+│   ├── static/           # 前端静态资源
+│   │   ├── css/             # 样式文件
+│   │   ├── js/              # JavaScript 文件
+│   │   └── images/          # 图片资源
+│   └── templates/        # HTML 模板
+│       ├── admin.html         # 管理后台
+│       ├── interview.html     # 文字面试页
+│       ├── video_interview.html # 视频面试页
+│       ├── live_interview.html  # 实时面试页
+│       └── result.html        # 面试结果页
+├── tests/                # 单元测试
+├── main.py               # FastAPI 应用入口
+├── run.py                # 启动脚本
+├── requirements.txt      # Python 依赖
+└── .env.example          # 环境变量示例
 ```
 
 ## 快速开始
 
-### 1. 安装依赖
+### 1. 环境要求
+
+- Python 3.9+
+- 支持 OpenAI 兼容 API 的 LLM 服务（如 SiliconFlow、DeepSeek、OpenAI 等）
+
+### 2. 安装
 
 ```bash
+# 克隆项目
+git clone git@github.com:NongFuShangQuan/ai-interviewer-agent.git
+cd ai-interviewer-agent
+
+# 创建虚拟环境
 python -m venv .venv
-source .venv/bin/activate  # Windows: .venv\Scripts\activate
+
+# 激活虚拟环境
+# Windows:
+.venv\Scripts\activate
+# Linux/macOS:
+source .venv/bin/activate
+
+# 安装依赖
 pip install -r requirements.txt
 ```
 
-### 2. 配置环境变量
+### 3. 配置
+
+复制 `.env.example` 为 `.env` 并填写配置：
 
 ```bash
 cp .env.example .env
 ```
 
-编辑 `.env`，填入你的 LLM API Key：
+编辑 `.env`：
 
 ```env
+# 必填：LLM API 配置
 LLM_API_KEY=your-api-key-here
 LLM_API_BASE_URL=https://api.siliconflow.cn/v1
-LLM_MODEL=mimo-v2-omni
+LLM_MODEL=Qwen/Qwen2.5-72B-Instruct
+
+# 服务器配置
+HOST=0.0.0.0
+PORT=9000
+
+# 数据库（默认 SQLite）
+DATABASE_URL=sqlite+aiosqlite:///./ai_interview.db
+
+# 邮件配置（可选）
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=
+SMTP_PASSWORD=
+
+# 面试默认轮数
+INTERVIEW_ROUNDS=5
 ```
 
-### 3. 启动服务
+**支持的 LLM 服务商：**
+
+| 服务商 | LLM_API_BASE_URL | LLM_MODEL 示例 |
+|--------|------------------|----------------|
+| SiliconFlow | `https://api.siliconflow.cn/v1` | `Qwen/Qwen2.5-72B-Instruct` |
+| DeepSeek | `https://api.deepseek.com/v1` | `deepseek-chat` |
+| OpenAI | `https://api.openai.com/v1` | `gpt-4o` |
+| 小米 MiMo | `https://token-plan-cn.xiaomimimo.com/v1` | `mimo-v2.5-pro` |
+| 本地 Ollama | `http://localhost:11434/v1` | `qwen2.5:7b` |
+
+### 4. 启动
 
 ```bash
 python run.py
 ```
 
-服务默认运行在 `http://localhost:9000`，访问 `/` 进入管理后台。
+服务启动后访问：
+- 管理后台：http://localhost:9000/
+- API 文档：http://localhost:9000/docs
 
-## 环境变量说明
+### 5. 使用流程
 
-| 变量 | 默认值 | 说明 |
-|------|--------|------|
-| `LLM_API_KEY` | （必填） | LLM 服务 API Key |
-| `LLM_API_BASE_URL` | `https://api.siliconflow.cn/v1` | LLM API 地址 |
-| `LLM_MODEL` | `mimo-v2-omni` | 模型名称 |
-| `HOST` | `0.0.0.0` | 服务监听地址 |
-| `PORT` | `9000` | 服务端口 |
-| `DATABASE_URL` | `sqlite+aiosqlite:///./ai_interview.db` | 数据库连接 |
-| `SMTP_HOST` | `smtp.gmail.com` | 邮件服务器 |
-| `SMTP_PORT` | `587` | 邮件端口 |
-| `SMTP_USER` | （空） | 邮箱用户名 |
-| `SMTP_PASSWORD` | （空） | 邮箱密码 |
-| `INTERVIEW_ROUNDS` | `10` | 默认面试轮数 |
+1. 打开管理后台，点击「创建面试」
+2. 填写候选人信息（姓名、邮箱、职位、简历等）
+3. 系统生成面试链接并发送邀请邮件（需配置 SMTP）
+4. 候选人打开面试链接开始面试
+5. 面试完成后查看评估报告
 
-## 使用流程
+**面试链接格式：**
+- 文字面试：`http://localhost:9000/interview/{token}`
+- 视频面试：`http://localhost:9000/video/{token}`
+- 实时面试：`http://localhost:9000/live/{token}`
 
-1. 访问 `/` 打开管理后台
-2. 点击「创建面试」，选择岗位模板、填写候选人信息、选择面试类型
-3. 系统生成面试链接，可通过邮件发送给候选人
-4. 候选人打开链接开始面试（文本/视频/语音）
-5. 面试结束后，系统自动生成六维评估报告
-6. 在管理后台查看结果，支持 JSON/CSV/HTML 导出
+## 架构设计
 
-## 多 Agent 架构
+### 多 Agent 工作流
 
 ```
-候选人回答
-    │
-    ▼
-┌─────────────┐     ┌─────────────┐     ┌─────────────────┐
-│ Interviewer │────▶│  Evaluator  │────▶│ Final Evaluation│
-│  面试官 Agent│     │  评估官 Agent│     │   终面评估       │
-└──────┬──────┘     └──────┬──────┘     └─────────────────┘
-       │                   │
-       │   RAG 检索增强     │
-       ▼                   ▼
-┌──────────────────────────────────┐
-│          RAG Manager             │
-│  题库 │ 简历 │ 评估参考 │ 知识库  │
-└──────────────────────────────────┘
+管理员创建面试 → Socket.IO 连接 → 面试循环开始
+                                      ↓
+                              ┌──────────────────┐
+                              │  Interviewer Agent │ ← RAG 题库 + 简历深挖
+                              │  生成面试问题      │
+                              └────────┬─────────┘
+                                       ↓
+                              ToolCallGuard 检查
+                              (循环检测/降级/阻断)
+                                       ↓
+                              ┌──────────────────┐
+                              │  候选人回答        │ ← 文字输入 / 语音识别
+                              └────────┬─────────┘
+                                       ↓
+                              ┌──────────────────┐
+                              │  Evaluator Agent   │ ← 实时评估
+                              │  评估本轮回答      │
+                              └────────┬─────────┘
+                                       ↓
+                              继续下一轮 or 结束
+                                       ↓
+                              ┌──────────────────┐
+                              │  Final Evaluation │ ← 综合评估报告
+                              │  6维度评分+建议   │
+                              └──────────────────┘
 ```
 
-- **面试官 Agent** — 结合 RAG 检索结果生成面试题目，30 秒超时自动降级
-- **评估官 Agent** — 轮次评分（1-10 分）+ 终面六维评估，支持 JSON 容错解析
-- **协调器** — LangGraph StateGraph 编排工作流，在问答之间暂停等待外部输入
-- **ToolCallGuard** — 滑动窗口指纹检测、迭代限制、快速熔断、降级兜底，防止 Agent 死循环
+### ToolCallGuard 保护机制
 
-## 运行测试
+- **迭代限制**：每轮最多 8 次 Agent 调用，总共最多 150 次
+- **循环检测**：滑动窗口指纹检测重复调用模式
+- **降级策略**：检测到异常时自动回退到预设问题/默认评分
+- **负样本回流**：循环事件记录为训练负样本，可用于 SFT/RL
+
+## 测试
 
 ```bash
-python -m pytest tests/
+# 运行单元测试
+pytest tests/
+
+# 运行特定测试
+pytest tests/test_evaluator.py
+pytest tests/test_guard.py
+pytest tests/test_rag.py
 ```
 
-## License
+## 许可证
 
-MIT
+MIT License

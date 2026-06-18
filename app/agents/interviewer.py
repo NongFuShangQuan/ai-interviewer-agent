@@ -1,4 +1,5 @@
 """Interviewer Agent - Conducts the AI interview with RAG enhancement"""
+import re
 import logging
 import asyncio
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
@@ -184,10 +185,21 @@ async def interviewer_generate_question(state: dict) -> dict:
                     timeout=30
                 )
                 question = response.content
+                # Strip thinking tags (e.g. <think>...</think>) from reasoning models
+                question = re.sub(r'<think>[\s\S]*?<\/think>', '', question, flags=re.IGNORECASE).strip()
+                # Fallback if response is empty after stripping
+                if not question or len(question) < 5:
+                    logger.warning('Interviewer returned empty response after stripping think tags')
+                    round_num = state.get('current_round', 1) - 1
+                    question = MOCK_QUESTIONS[round_num % len(MOCK_QUESTIONS)]
                 # Cache the response
                 await cache.put("interviewer", prompt_hash, question)
             except asyncio.TimeoutError:
                 logger.warning('Interviewer LLM timeout (30s), using fallback')
+                round_num = state.get('current_round', 1) - 1
+                question = MOCK_QUESTIONS[round_num % len(MOCK_QUESTIONS)]
+            except Exception as e:
+                logger.error(f'Interviewer LLM error: {e}, using fallback')
                 round_num = state.get('current_round', 1) - 1
                 question = MOCK_QUESTIONS[round_num % len(MOCK_QUESTIONS)]
 

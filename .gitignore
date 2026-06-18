@@ -1,38 +1,61 @@
 # Python
 __pycache__/
 *.py[cod]
+*.pyo
 *.egg-info/
+*.egg
 dist/
 build/
+.eggs/
 
 # Virtual environments
 .venv/
 venv/
+ENV/
 
 # IDE
 .idea/
 .vscode/
 *.swp
+*.swo
+*~
 
 # Environment variables
 .env
 
 # Database files
 *.db
+*.sqlite3
 
-# Temporary files
-_tmp_sio/
+# Temporary / debug files
+_tmp_*/
 _launcher_out.txt
 _stderr.txt
 _stdout.txt
 _garbled.json
 _live_unicode.txt
-
-# Launchers (Windows-specific helper scripts)
-_launch.vbs
-_launch2.vbs
-_run.cmd
+_launch*.vbs
+_run*.cmd
 _run_server.py
+_start*.cmd
 _start_debug.py
-start_server.bat
-start_server2.bat
+_test_*.py
+*.bat
+gen_app.py
+
+# Cache
+data/cache/
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Node modules (if any)
+node_modules/
+
+# Logs
+*.log
+
+# Qoder IDE
+.qoder/

@@ -379,7 +379,7 @@ class InterviewSession:
 
 def create_socketio_server() -> socketio.AsyncServer:
     """Create and configure Socket.IO server with interview event handlers"""
-    sio = socketio.AsyncServer(async_mode="asgi", cors_allowed_origins=["http://localhost:9000", "http://127.0.0.1:9000", "http://0.0.0.0:9000"])
+    sio = socketio.AsyncServer(async_mode="asgi", cors_allowed_origins="*")
 
     sessions = {}
     token_to_sid = {}
