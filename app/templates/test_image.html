@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Image Test</title>
+    <style>
+        body { background: #0a0a0f; color: white; font-family: sans-serif; padding: 40px; text-align: center; }
+        img { max-width: 400px; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
+        h1 { margin-bottom: 20px; }
+        .status { margin-top: 20px; padding: 10px; border-radius: 8px; }
+        .ok { background: rgba(34,197,94,0.2); color: #22c55e; }
+        .error { background: rgba(239,68,68,0.2); color: #ef4444; }
+    </style>
+</head>
+<body>
+    <h1>Fay Digital Human Test</h1>
+    <img src="/static/images/digital_human/set1_fay/idle.jpg" 
+         alt="Fay Digital Human" 
+         onload="document.getElementById('status').className='status ok';document.getElementById('status').textContent='Image loaded successfully!'"
+         onerror="document.getElementById('status').className='status error';document.getElementById('status').textContent='Image failed to load!'">
+    <div id="status" class="status">Loading...</div>
+    <p>If you see the image above, the Fay digital human is working correctly.</p>
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>面试结果</title>
+    <link rel="stylesheet" href="/static/css/interview.css">
+    <style>
+        .result-container { max-width: 600px; margin: 60px auto; padding: 20px; }
+        .loading { text-align: center; padding: 60px; }
+        .loading .spinner-big { display: inline-block; width: 40px; height: 40px; border: 3px solid rgba(102,126,234,0.2); border-top-color: #667eea; border-radius: 50%; animation: spin 0.8s linear infinite; }
+    </style>
+</head>
+<body>
+    <div class="result-container" id="resultContainer">
+        <div class="loading"><div class="spinner-big"></div><p style="margin-top:16px;color:#888;">正在加载面试结果...</p></div>
+    </div>
+    <script>
+        var TOKEN = "{{ token }}";
+        (async function() {
+            try {
+                var res = await fetch('/api/admin/interviews');
+                var data = await res.json();
+                var container = document.getElementById('resultContainer');
+                var found = null;
+                for (var i = 0; i < data.interviews.length; i++) {
+                    if (data.interviews[i].token === TOKEN) { found = data.interviews[i]; break; }
+                }
+                if (!found) {
+                    container.innerHTML = '<div class="complete-card"><h2>⏳ 面试进行中</h2><p style="color:#888;margin-top:12px;">请完成面试后刷新此页面查看结果。</p></div>';
+                    return;
+                }
+                if (found.status !== 'completed') {
+                    container.innerHTML = '<div class="complete-card"><h2>⏳ 面试进行中</h2><p style="color:#888;margin-top:12px;">请完成面试后刷新此页面查看结果。</p></div>';
+                    return;
+                }
+                window.location.href = '/interview/' + TOKEN;
+            } catch(e) {
+                document.getElementById('resultContainer').innerHTML = '<div class="complete-card"><h2>❌ 加载失败</h2><p style="color:#888;">' + e.message + '</p></div>';
+            }
+        })();
+    </script>
+</body>
+</html>

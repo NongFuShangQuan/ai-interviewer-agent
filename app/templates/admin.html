@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<title>AI Interview - Admin</title>
+<link rel="stylesheet" href="/static/css/admin.css?v=20260530b">
+</head>
+<body>
+<div class="layout">
+<!-- Sidebar -->
+<div class="sidebar">
+  <div class="sb-brand">
+    <div class="sb-logo">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M22 2L11 13"/><path d="M22 2L15 22 11 13 2 9z"/></svg>
+    </div>
+    <span>AI Interview</span>
+  </div>
+  <div class="sb-nav">
+    <a class="sb-link active" data-page="dashboard">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      <span>&#24037;&#20316;&#21488;</span>
+    </a>
+    <a class="sb-link" data-page="create">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+      <span>&#21019;&#24314;&#38754;&#35797;</span>
+    </a>
+    <a class="sb-link" data-page="list">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+      <span>&#38754;&#35797;&#35760;&#24405;</span>
+    </a>
+    <a class="sb-link" data-page="guard">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      <span>&#31995;&#32479;&#30417;&#25511;</span>
+    </a>
+    <a class="sb-link" data-page="rag">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+      <span>RAG&#30693;&#35782;&#24211;</span>
+    </a>
+  </div>
+  <div class="sb-footer"><span class="sb-version">v1.0.0</span></div>
+</div>
+
+<!-- Content -->
+<div class="content">
+
+<!-- Dashboard Page -->
+<div id="page-dashboard" class="page active">
+  <div class="page-head">
+    <div><h1>&#24037;&#20316;&#21488;</h1><div class="page-sub">&#38754;&#35797;&#31995;&#32479;&#24635;&#35272;</div></div>
+  </div>
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-icon blue"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div><div><span class="stat-val" id="statTotal">0</span><span class="stat-label">&#24635;&#38754;&#35797;&#25968;</span></div></div>
+    <div class="stat-card"><div class="stat-icon green"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><div><span class="stat-val" id="statCompleted">0</span><span class="stat-label">&#24050;&#23436;&#25104;</span></div></div>
+    <div class="stat-card"><div class="stat-icon purple"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div><span class="stat-val" id="statInProgress">0</span><span class="stat-label">&#36827;&#34892;&#20013;</span></div></div>
+    <div class="stat-card"><div class="stat-icon amber"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13"/><path d="M22 2L15 22 11 13 2 9z"/></svg></div><div><span class="stat-val" id="statAvgScore">0</span><span class="stat-label">&#24179;&#22343;&#20998;</span></div></div>
+  </div>
+  <div class="card">
+    <div class="card-head"><h3>&#26368;&#36817;&#38754;&#35797;</h3></div>
+    <div class="table-wrap"><table><thead><tr><th>&#20540;&#36873;&#20154;</th><th>&#32844;&#20301;</th><th>&#31867;&#22411;</th><th>&#29366;&#24577;</th><th>&#20998;&#25968;</th><th>&#25805;&#20316;</th></tr></thead><tbody id="recentBody"></tbody></table></div>
+  </div>
+</div>
+
+<!-- Create Page -->
+<div id="page-create" class="page">
+  <div class="page-head"><div><h1>&#21019;&#24314;&#38754;&#35797;</h1><div class="page-sub">&#20026;&#20540;&#36873;&#20154;&#23450;&#21046;&#38754;&#35797;</div></div></div>
+  <div class="card">
+    <div class="card-head"><h3>&#38754;&#35797;&#31867;&#22411;</h3></div>
+    <div class="type-cards">
+      <div class="type-card active" onclick="selectType(this)"><input type="radio" name="itype" value="text" checked><div class="tc-icon">&#9997;</div><div class="tc-name">&#25991;&#26412;&#38754;&#35797;</div><div class="tc-desc">&#36890;&#36807;&#25991;&#26412;&#20132;&#27969;</div></div>
+      <div class="type-card" onclick="selectType(this)"><input type="radio" name="itype" value="video"><div class="tc-icon">&#128249;</div><div class="tc-name">&#35270;&#39057;&#38754;&#35797;</div><div class="tc-desc">&#25968;&#23383;&#20154;AI&#38754;&#35797;&#23448;</div></div>
+      <div class="type-card" onclick="selectType(this)"><input type="radio" name="itype" value="live"><div class="tc-icon">&#127908;</div><div class="tc-name">&#30495;&#20154;&#30452;&#25773;</div><div class="tc-desc">&#35821;&#38899;&#23454;&#26102;&#20132;&#20114;</div></div>
+    </div>
+  </div>
+  <div class="create-two-col">
+    <div class="card">
+      <div class="card-head"><h3>&#20540;&#36873;&#20154;&#20449;&#24687;</h3></div>
+      <div class="field"><label>&#22995;&#21517; <span class="req">*</span></label><input id="cName" placeholder="&#35831;&#36755;&#20837;&#20540;&#36873;&#20154;&#22995;&#21517;"></div>
+      <div class="field"><label>&#37038;&#31665; <span class="req">*</span></label><input id="cEmail" type="email" placeholder="&#35831;&#36755;&#20837;&#37038;&#31665;&#22320;&#22336;"></div>
+      <div class="field"><label>&#31649;&#21345;</label><textarea id="cResume" rows="5" placeholder="&#31649;&#21345;&#20449;&#24687;&#65288;&#21487;&#36873;&#65289;"></textarea></div>
+    </div>
+    <div class="card">
+      <div class="card-head"><h3>&#32844;&#20301;&#20449;&#24687;</h3></div>
+      <div class="select-row">
+        <div class="field"><label>&#32844;&#20301;&#31867;&#21035;</label><select id="jobCategory" onchange="onCategoryChange()"><option value="">&#36873;&#25321;&#31867;&#21035;</option></select></div>
+        <div class="field"><label>&#32844;&#20301;</label><select id="jobTitle" onchange="onJobChange()"><option value="">&#36873;&#25321;&#32844;&#20301;</option></select></div>
+      </div>
+      <div class="field"><label>&#32844;&#20301;&#21517;&#31216;</label><input id="jTitle" placeholder="&#32844;&#20301;&#21517;&#31216;"></div>
+      <div class="field"><label>&#39064;&#30446;&#25968;&#37327;</label><select id="totalRounds"><option value="5">5 &#36947;&#39064;&#65288;&#40664;&#35748;&#65289;</option><option value="10">10 &#36947;&#39064;</option><option value="20">20 &#36947;&#39064;</option></select></div>
+      <div class="field"><label>&#32844;&#20301;&#25551;&#36848;</label><textarea id="jDesc" rows="5" placeholder="&#32844;&#20301;&#35762;&#35299;"></textarea></div>
+    </div>
+  </div>
+  <div style="margin-top:20px"><button class="btn primary" onclick="createInterview()">&#21019;&#24314;&#38754;&#35797;</button></div>
+  <div class="result-box" id="createResult" style="display:none"></div>
+</div>
+
+<!-- List Page -->
+<div id="page-list" class="page">
+  <div class="page-head"><div><h1>&#38754;&#35797;&#35760;&#24405;</h1><div class="page-sub">&#25152;&#26377;&#38754;&#35797;&#35760;&#24405;</div></div></div>
+  <div class="card">
+    <div class="table-wrap"><table><thead><tr><th>&#20540;&#36873;&#20154;</th><th>&#32844;&#20301;</th><th>&#31867;&#22411;</th><th>&#29366;&#24577;</th><th>&#36718;&#27425;</th><th>&#20998;&#25968;</th><th>&#25512;&#33616;</th><th>&#25805;&#20316;</th></tr></thead><tbody id="interviewBody"></tbody></table></div>
+  </div>
+</div>
+
+<!-- Guard Page -->
+<div id="page-guard" class="page">
+  <div class="page-head"><div><h1>&#31995;&#32479;&#30417;&#25511;</h1><div class="page-sub">AI Agent&#20551;&#24212;&#30417;&#25511;</div></div></div>
+  <div class="stats-row" id="guardStats"></div>
+</div>
+
+<!-- RAG Page -->
+<div id="page-rag" class="page">
+  <div class="page-head">
+    <div><h1>RAG Knowledge Base</h1><div class="page-sub">Retrieval Augmented Generation</div></div>
+    <div><button class="btn primary" onclick="reindexRAG()">Reindex</button></div>
+  </div>
+  <div class="stats-row" id="ragStats">
+    <div class="stat-card"><div class="stat-icon blue"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div><div><span class="stat-val" id="ragQCount">-</span><span class="stat-label">Questions</span></div></div>
+    <div class="stat-card"><div class="stat-icon green"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><div><span class="stat-val" id="ragKCount">-</span><span class="stat-label">Knowledge</span></div></div>
+    <div class="stat-card"><div class="stat-icon purple"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div><span class="stat-val" id="ragECount">-</span><span class="stat-label">Eval References</span></div></div>
+    <div class="stat-card"><div class="stat-icon amber"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13"/><path d="M22 2L15 22 11 13 2 9z"/></svg></div><div><span class="stat-val" id="ragCacheSize">-</span><span class="stat-label">Embedding Cache</span></div></div>
+  </div>
+  <div class="card">
+    <div class="card-head"><h3>Question Bank</h3></div>
+    <div class="form-row" style="margin-bottom:12px">
+      <div class="field"><label>Filter by Category</label><select id="ragFilterCategory" onchange="filterRAGQuestions()"><option value="">All</option></select></div>
+      <div class="field"><label>Filter by Job Family</label><select id="ragFilterFamily" onchange="filterRAGQuestions()"><option value="">All</option></select></div>
+    </div>
+    <div id="ragQuestionList" style="max-height:400px;overflow-y:auto">Loading...</div>
+  </div>
+  <div class="card">
+    <div class="card-head"><h3>Knowledge Entries</h3></div>
+    <div id="ragKnowledgeList" style="max-height:300px;overflow-y:auto">Loading...</div>
+  </div>
+</div>
+
+</div><!-- /content -->
+</div><!-- /layout -->
+
+<!-- Detail Modal -->
+<div class="modal-overlay" id="detailModal" style="display:none">
+  <div class="modal">
+    <div class="modal-head"><h2>&#38754;&#35797;&#35814;&#24773;</h2><button class="modal-close" onclick="closeDetail()">&#215;</button></div>
+    <div class="modal-body" id="detailBody"></div>
+  </div>
+</div>
+
+<script>var TOKEN='';</script>
+<script src="/static/js/admin.js?v=20260530b"></script>
+</body>
+</html>

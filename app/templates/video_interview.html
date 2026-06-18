@@ -1,0 +1,117 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 智能面试</title>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <link rel="stylesheet" href="/static/css/video.css?v=1780169548">
+</head>
+<body>
+    <div id="rag-indicator" style="display:none;position:fixed;top:10px;right:10px;background:rgba(79,70,229,0.9);color:white;padding:6px 12px;border-radius:20px;font-size:11px;z-index:100;backdrop-filter:blur(4px)">
+        <span>&#128218;</span> RAG: <span id="rag-status-text">Loading...</span>
+    </div>
+
+<div class="welcome-page" id="welcomePage">
+    <div class="welcome-bg"></div>
+    <div class="welcome-particles" id="welcomeParticles"></div>
+    <div class="welcome-content">
+        <div class="welcome-brand">
+            <div class="brand-icon">&#10022;</div>
+            <div class="brand-text">AI Interview</div>
+        </div>
+        <div class="welcome-card">
+            <div class="welcome-avatar-area">
+                <canvas id="welcomeAvatar" width="200" height="200"></canvas>
+                <div class="avatar-ring"></div>
+                <div class="avatar-pulse"></div>
+            </div>
+            <h1>AI 智能面试</h1>
+            <p class="welcome-desc">AI 面试官将与您进行一对一面试<br>共 <strong>5 轮</strong>问答，预计 15-30 分钟</p>
+            <div class="welcome-tips">
+                <div class="wtip"><span class="wtip-icon">&#128247;</span><span>请确保摄像头可用</span></div>
+                <div class="wtip"><span class="wtip-icon">&#127908;</span><span>请确保麦克风可用（可选）</span></div>
+                <div class="wtip"><span class="wtip-icon">&#128161;</span><span>在安静、光线充足的环境中进行</span></div>
+            </div>
+            <button class="btn-start" id="startBtn">
+                <span>开始面试</span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </button>
+            <p class="privacy-text">&#128274; 摄像头数据仅用于视线追踪，不会录制或上传</p>
+        </div>
+    </div>
+</div>
+
+<div class="interview-page" id="interviewPage" style="display:none;">
+    <header class="top-bar">
+        <div class="top-left"><span class="top-logo">&#10022; AI Interview</span></div>
+        <div class="top-center">
+            <div class="round-indicator">
+                <span class="round-label">进度</span>
+                <div class="round-dots" id="roundDots"></div>
+                <span class="round-text" id="roundText">1 / 5</span>
+            </div>
+        </div>
+        <div class="top-right">
+            <div class="rec-dot" id="recDot"></div>
+            <span class="timer" id="timer">00:00</span>
+        </div>
+    </header>
+
+    <main class="main-area">
+        <section class="panel-ai">
+            <div class="ai-glow" id="aiGlow"></div>
+            <div class="vh-container">
+                <canvas id="vhCanvas" width="500" height="650"></canvas>
+                <div class="vh-status-ring" id="vhStatusRing"></div>
+            </div>
+            <div class="ai-info">
+                <span class="ai-name-text">小智</span>
+                <span class="ai-role">AI 面试官</span>
+                <div class="ai-status" id="aiStatus">准备中..</div>
+            </div>
+            <div class="ai-wave" id="aiWave">
+                <span></span><span></span><span></span><span></span><span></span>
+            </div>
+        </section>
+
+        <section class="panel-candidate">
+            <div class="cam-box">
+                <video id="camVideo" autoplay playsinline muted></video>
+                <div class="cam-badge">&#128247; 你</div>
+                <div class="cam-border" id="camBorder"></div>
+            </div>
+            <div class="chat-box">
+                <div class="chat-scroll" id="chatScroll"></div>
+            </div>
+            <div class="input-box" id="inputBox" style="display:none;">
+                <textarea id="answerInput" placeholder="输入您的回答..." rows="2"></textarea>
+                <div class="input-actions">
+                    <button class="btn-mic" id="micBtn">&#127908; 语音</button>
+                    <button class="btn-send" id="sendBtn">&#10148; 发送</button>
+                </div>
+            </div>
+        </section>
+    </main>
+</div>
+
+<div class="complete-page" id="completePage" style="display:none;">
+    <div class="complete-card">
+        <div class="complete-check">&#10003;</div>
+        <h2>面试完成</h2>
+        <div class="score-ring" id="scoreRing">
+            <svg viewBox="0 0 120 120"><circle class="bg" cx="60" cy="60" r="52"/><circle class="fg" id="scoreArc" cx="60" cy="60" r="52"/></svg>
+            <div class="score-val" id="scoreVal">0.0</div>
+        </div>
+        <p class="score-hint">综合评分（满分10分）</p>
+        <div class="rec-tag" id="recTag">待定</div>
+        <div class="eval-sections" id="evalSections"></div>
+    </div>
+</div>
+
+<script>var TOKEN="{{ token }}";var WS_BASE="{{ ws_url }}";var CANDIDATE_NAME="{{ candidate_name }}";</script>
+<script src="/static/js/socket.io.min.js"></script>
+<script src="/static/js/video.js?v=1780193282"></script>
+<button class="btn-skip-tts" id="skipTTSBtn" onclick="skipTTS()" style="display:none;position:fixed;bottom:80px;right:20px;padding:8px 16px;background:rgba(99,102,241,0.85);border:none;border-radius:20px;color:white;font-size:12px;cursor:pointer;z-index:99;backdrop-filter:blur(4px)">&#9193; 跳过语音</button>
+</body>
+</html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI &#26234;&#33021;&#38754;&#35797;</title>
+    <link rel="stylesheet" href="/static/css/interview.css">
+</head>
+<body>
+    <div id="rag-indicator" style="display:none;position:fixed;top:10px;right:10px;background:rgba(79,70,229,0.9);color:white;padding:6px 12px;border-radius:20px;font-size:11px;z-index:100">
+        <span>&#128218;</span> RAG: <span id="rag-status-text">Loading...</span>
+    </div>
+    <div class="container">
+        <div class="header">
+            <h1>AI &#26234;&#33021;&#38754;&#35797;</h1>
+            <div class="subtitle" id="jobTitle">&#27491;&#22312;&#21152;&#36733;&#38754;&#35797;&#20449;&#24687;...</div>
+        </div>
+        <div class="progress-text" id="progressText">&#20934;&#22791;&#20013;..</div>
+        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+        <div class="chat-area" id="chatArea"></div>
+        <div class="input-area" id="inputArea" style="display:none;">
+            <div class="input-wrapper">
+                <textarea id="answerInput" placeholder="&#36755;&#20837;&#24744;&#30340;&#22238;&#31572;..." rows="1"></textarea>
+                <button class="send-btn" id="sendBtn" onclick="sendAnswer()">&#10148;</button>
+            </div>
+        </div>
+    </div>
+    <div class="welcome-overlay" id="welcomeOverlay">
+        <div class="welcome-card">
+            <h2>AI &#26234;&#33021;&#38754;&#35797;</h2>
+            <p>&#24744;&#22909;&#65281;&#27426;&#36814;&#21442;&#21152;&#26412;&#27425;AI&#26234;&#33021;&#38754;&#35797;&#12290;<br>&#38754;&#35797;&#20849;<strong>10 &#36718;</strong>&#38382;&#31572;&#65292;&#39044;&#35745; 15-30 &#20998;&#38047;&#12290;<br>&#35831;&#22914;&#23454;&#22238;&#31572;&#65292;&#31995;&#32479;&#23558;&#33258;&#21160;&#20026;&#24744;&#29983;&#25104;&#35780;&#20272;&#25253;&#21578;&#12290;</p>
+            <button class="start-btn" onclick="startInterview()">&#24320;&#22987;&#38754;&#35797;</button>
+        </div>
+    </div>
+    <script>const TOKEN = "{{ token }}"; const WS_BASE = "{{ ws_url }}"; const CANDIDATE_NAME = "{{ candidate_name }}";</script>
+    <script src="/static/js/socket.io.min.js"></script>
+    <script src="/static/js/interview.js"></script>
+</body>
+</html>

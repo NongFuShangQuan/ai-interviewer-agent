@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><title>Speech Recognition Test</title>
+<style>
+body{font-family:system-ui;max-width:600px;margin:40px auto;padding:20px;background:#111;color:#eee}
+h2{color:#4f46e5}
+#log{background:#1a1a2e;padding:16px;border-radius:8px;font-size:13px;max-height:400px;overflow-y:auto;margin:12px 0}
+.log-entry{margin:4px 0;border-bottom:1px solid #222;padding:4px 0}
+.log-entry.error{color:#ef4444}
+.log-entry.ok{color:#22c55e}
+.log-entry.warn{color:#eab308}
+textarea{width:100%;height:80px;padding:10px;border-radius:8px;background:#222;color:#eee;border:1px solid #333;font-size:14px}
+button{padding:10px 20px;border:none;border-radius:8px;font-size:14px;cursor:pointer;margin:4px}
+.btn-start{background:#4f46e5;color:white}
+.btn-stop{background:#ef4444;color:white}
+#status{font-size:16px;font-weight:600;margin:8px 0}
+</style></head><body>
+<h2>&#127908; Speech Recognition Diagnostic</h2>
+<div id="status">Ready</div>
+<textarea id="output" placeholder="Recognized text will appear here..."></textarea>
+<div>
+<button class="btn-start" onclick="doStart()">&#127908; Start Recognition</button>
+<button class="btn-stop" onclick="doStop()">&#127464; Stop</button>
+</div>
+<div id="log"></div>
+
+<script>
+var logEl = document.getElementById('log');
+var statusEl = document.getElementById('document.getElementById') || document.getElementById('status');
+var outputEl = document.getElementById('output');
+var recognition = null;
+
+function log(msg, cls) {
+    var d = document.createElement('div');
+    d.className = 'log-entry ' + (cls || '');
+    d.textContent = new Date().toLocaleTimeString() + ' | ' + msg;
+    logEl.appendChild(d);
+    logEl.scrollTop = logEl.scrollHeight;
+    console.log(msg);
+}
+
+// Check 1: API availability
+var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+if (SR) {
+    log('SpeechRecognition API: AVAILABLE', 'ok');
+    log('  window.SpeechRecognition: ' + (window.SpeechRecognition ? 'yes' : 'no'));
+    log('  window.webkitSpeechRecognition: ' + (window.webkitSpeechRecognition ? 'yes' : 'no'));
+} else {
+    log('SpeechRecognition API: NOT AVAILABLE', 'error');
+    log('  This browser does not support Web Speech API', 'error');
+}
+
+// Check 2: Secure context
+log('Secure context: ' + (window.isSecureContext ? 'YES' : 'NO'), window.isSecureContext ? 'ok' : 'error');
+log('Protocol: ' + location.protocol);
+log('Hostname: ' + location.hostname);
+
+// Check 3: getUserMedia
+if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+    log('getUserMedia: AVAILABLE', 'ok');
+} else {
+    log('getUserMedia: NOT AVAILABLE', 'error');
+}
+
+// Check 4: Try to get microphone access
+navigator.mediaDevices.getUserMedia({audio: true}).then(function(stream) {
+    log('Microphone access: GRANTED', 'ok');
+    log('  Audio tracks: ' + stream.getAudioTracks().length);
+    stream.getTracks().forEach(function(t) {
+        log('  Track: ' + t.label + ' (' + t.kind + ')', 'ok');
+        t.stop();
+    });
+}).catch(function(e) {
+    log('Microphone access: DENIED - ' + e.message, 'error');
+    log('  Error name: ' + e.name, 'error');
+});
+
+function doStart() {
+    if (!SR) { log('Cannot start: API not available', 'error'); return; }
+    outputEl.value = '';
+    try {
+        recognition = new SR();
+    } catch(e) {
+        log('new SR() threw: ' + e.message, 'error');
+        return;
+    }
+    recognition.lang = 'zh-CN';
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.maxAlternatives = 1;
+
+    log('Created SR instance, attempting start()...');
+
+    recognition.onstart = function() {
+        log('>>> onstart fired!', 'ok');
+        statusEl.textContent = 'LISTENING... Speak now!';
+        statusEl.style.color = '#22c55e';
+    };
+
+    recognition.onresult = function(e) {
+        log('>>> onresult fired! Results: ' + e.results.length, 'ok');
+        var text = '';
+        for (var i = 0; i < e.results.length; i++) {
+            text += e.results[i][0].transcript;
+            log('  result[' + i + ']: "' + e.results[i][0].transcript + '" (final=' + e.results[i].isFinal + ')');
+        }
+        outputEl.value = text;
+    };
+
+    recognition.onerror = function(e) {
+        log('>>> onerror: ' + e.error, 'error');
+        statusEl.textContent = 'ERROR: ' + e.error;
+        statusEl.style.color = '#ef4444';
+    };
+
+    recognition.onend = function() {
+        log('>>> onend fired');
+        statusEl.textContent = 'STOPPED';
+        statusEl.style.color = '#eab308';
+    };
+
+    try {
+        recognition.start();
+        log('start() called successfully', 'ok');
+        statusEl.textContent = 'STARTING...';
+        statusEl.style.color = '#eab308';
+    } catch(e) {
+        log('start() threw: ' + e.message, 'error');
+    }
+
+    // Check after 3 seconds
+    setTimeout(function() {
+        log('--- 3s check: recognition active? ' + (recognition ? 'object exists' : 'null'));
+    }, 3000);
+}
+
+function doStop() {
+    if (recognition) {
+        try { recognition.stop(); } catch(e) {}
+        log('Stopped recognition');
+    }
+}
+</script></body></html>

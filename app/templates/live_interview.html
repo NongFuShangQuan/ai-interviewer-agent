@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Live Interview</title>
+    <link rel="stylesheet" href="/static/css/video.css?v=1780243144">
+    <style>
+        .live-bar{padding:8px 12px;background:var(--card2);border:1px solid var(--border);border-radius:10px;margin:0 12px;display:flex;align-items:center;gap:8px}
+        .vad-dot{width:10px;height:10px;border-radius:50%;background:var(--text3);transition:all .3s}
+        .vad-dot.listening{background:var(--success);box-shadow:0 0 8px rgba(34,197,94,.4);animation:dotPulse 1.5s infinite}
+        .vad-dot.speaking{background:var(--danger);box-shadow:0 0 8px rgba(239,68,68,.4);animation:dotPulse .5s infinite}
+        .vad-dot.silence,.vad-dot.countdown{background:var(--warn);animation:dotPulse .8s infinite}
+        .vad-dot.submitted{background:var(--success)}
+        .vad-label{font-size:12px;color:var(--text2)}
+        .live-text{padding:10px 14px;background:rgba(99,102,241,.04);border:1px solid rgba(99,102,241,.1);border-radius:10px;font-size:13px;color:var(--text);line-height:1.6;min-height:36px;max-height:100px;overflow-y:auto;margin:0 12px;white-space:pre-wrap;display:none}
+        .btn-done{width:calc(100% - 24px);margin:8px 12px;padding:11px;background:linear-gradient(135deg,#22c55e,#16a34a);border:none;border-radius:8px;color:white;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;display:none}
+        .btn-done:hover{transform:scale(1.01);box-shadow:0 4px 16px rgba(34,197,94,.25)}
+        @keyframes dotPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.3)}}
+        .btn-skip-tts{position:fixed;bottom:80px;right:20px;padding:8px 16px;background:rgba(99,102,241,0.85);border:none;border-radius:20px;color:white;font-size:12px;cursor:pointer;z-index:99;display:none;backdrop-filter:blur(4px);transition:all .2s}
+        .btn-skip-tts:hover{background:rgba(99,102,241,1);transform:scale(1.05)}
+        .voice-hint{text-align:center;padding:8px;font-size:12px;color:var(--text3);display:none}
+    </style>
+</head>
+<body>
+    <div id="rag-indicator" style="display:none;position:fixed;top:10px;right:10px;background:rgba(79,70,229,0.9);color:white;padding:6px 12px;border-radius:20px;font-size:11px;z-index:100;backdrop-filter:blur(4px)">
+        <span>&#128218;</span> RAG: <span id="rag-status-text">Loading...</span>
+    </div>
+
+<div class="welcome-page" id="welcomePage">
+    <div class="welcome-bg"></div>
+    <div class="welcome-content">
+        <div class="welcome-brand"><div class="brand-icon">&#10022;</div><div class="brand-text">AI Interview</div></div>
+        <div class="welcome-card">
+            <div class="welcome-avatar-area">
+                <img id="welcomeImg" src="/static/images/digital_human/set1_fay/idle.jpg" alt="AI面试官" class="welcome-avatar-img">
+                <div class="avatar-ring"></div>
+                <div class="avatar-pulse"></div>
+            </div>
+            <h1>AI Live 面试</h1>
+            <p class="welcome-desc">直接对着AI数字人说话<br>系统智能判断您是否回答完毕<br>共 <strong id="welcomeRounds">5</strong> 轮</p>
+            <div class="welcome-tips">
+                <div class="wtip"><span class="wtip-icon">&#128247;</span><span>需要开启摄像头</span></div>
+                <div class="wtip"><span class="wtip-icon">&#127908;</span><span>需要开启麦克风</span></div>
+                <div class="wtip"><span class="wtip-icon">&#9654;&#65039;</span><span>说完后停顿3秒自动提交</span></div>
+            </div>
+            <button class="btn-start" id="startBtn"><span>开始面试</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+            <p class="privacy-text">&#128274; 数据仅在本地处理，不会上传</p>
+        </div>
+    </div>
+</div>
+
+<div class="interview-page" id="interviewPage" style="display:none;">
+    <header class="top-bar">
+        <div class="top-left"><span class="top-logo">&#10022; AI Live Interview</span></div>
+        <div class="top-center"><div class="round-indicator"><span class="round-label">进度</span><div class="round-dots" id="roundDots"></div><span class="round-text" id="roundText">1 / 5</span></div></div>
+        <div class="top-right"><div class="rec-dot" id="recDot"></div><span class="timer" id="timer">00:00</span></div>
+    </header>
+    <main class="main-area">
+        <section class="panel-ai">
+            <div class="ai-glow" id="aiGlow"></div>
+            <div class="dh-container" id="dhContainer">
+                <div class="dh-frame" id="dhFrame">
+                    <img id="dhImg" src="/static/images/digital_human/set1_fay/idle.jpg" alt="AI面试官" class="dh-img">
+                    <div class="dh-overlay" id="dhOverlay"></div>
+                    <div class="dh-scanline"></div>
+                </div>
+                <div class="dh-status-ring" id="dhStatusRing"></div>
+            </div>
+            <div class="ai-info">
+                <span class="ai-name-text">小智</span>
+                <span class="ai-role">AI 面试官</span>
+                <div class="ai-status" id="aiStatus">准备中..</div>
+            </div>
+            <div class="ai-wave" id="aiWave"><span></span><span></span><span></span><span></span><span></span></div>
+        </section>
+        <section class="panel-candidate">
+            <div class="cam-box"><video id="camVideo" autoplay playsinline muted></video><div class="cam-badge">&#128247; 你</div><div class="cam-border" id="camBorder"></div></div>
+            <div class="chat-box"><div class="chat-scroll" id="chatScroll"></div></div>
+            <div class="live-bar" id="liveBar" style="display:none"><div class="vad-dot" id="vadDot"></div><span class="vad-label" id="vadLabel">等待回答...</span></div>
+            <div class="live-text" id="liveText"></div>
+            <div class="voice-hint" id="voiceHint">请对着麦克风回答，说完后停顿3秒自动提交</div>
+            <button class="btn-done" id="doneBtn">&#10003; 我说完了</button>
+            <button class="btn-skip-tts" id="skipTTSBtn" onclick="skipTTS()">&#9193; 跳过语音</button>
+        </section>
+    </main>
+</div>
+
+<div class="complete-page" id="completePage" style="display:none;">
+    <div class="complete-card">
+        <div class="complete-check">&#10003;</div><h2>面试完成</h2>
+        <div class="score-ring" id="scoreRing"><svg viewBox="0 0 120 120"><circle class="bg" cx="60" cy="60" r="52"/><circle class="fg" id="scoreArc" cx="60" cy="60" r="52"/></svg><div class="score-val" id="scoreVal">0.0</div></div>
+        <p class="score-hint">综合评分（满分10分）</p>
+        <div class="rec-tag" id="recTag">待定</div>
+        <div class="eval-sections" id="evalSections"></div>
+    </div>
+</div>
+
+<script>
+var AVATAR_SET = new URLSearchParams(window.location.search).get('avatar') || 'set1_fay';
+var welcomeImg = document.getElementById('welcomeImg');
+if (welcomeImg) welcomeImg.src = '/static/images/digital_human/' + AVATAR_SET + '/idle.jpg';
+</script>
+<script>var TOKEN="{{ token }}";var WS_BASE="{{ ws_url }}";var CANDIDATE_NAME="{{ candidate_name }}";</script>
+<script src="/static/js/socket.io.min.js"></script>
+<script src="/static/js/live.js?v=1780243144"></script>
+</body>
+</html>

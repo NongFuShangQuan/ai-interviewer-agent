@@ -1,0 +1,138 @@
+{
+  "categories": [
+    {
+      "name": "技术开发",
+      "icon": "💻",
+      "jobs": [
+        {
+          "title": "高级Python工程师",
+          "description": "负责后端系统架构设计与开发，使用Python/FastAPI/Django框架，设计RESTful API，优化数据库查询性能，参与系统架构决策。要求3年以上Python开发经验，熟悉PostgreSQL/Redis/Docker，具备微服务架构经验优先。"
+        },
+        {
+          "title": "Java后端工程师",
+          "description": "负责企业级Java后端服务开发，使用Spring Boot/Cloud框架，设计高可用分布式系统，编写单元测试和集成测试。要求3年以上Java开发经验，熟悉MySQL/Redis/Kafka，了解微服务架构。"
+        },
+        {
+          "title": "前端工程师 (React)",
+          "description": "负责Web前端开发，使用React/TypeScript技术栈，实现响应式UI设计，优化前端性能和用户体验。要求2年以上前端开发经验，熟悉HTML/CSS/JavaScript，了解Webpack/Vite构建工具。"
+        },
+        {
+          "title": "全栈工程师",
+          "description": "负责前后端全栈开发，前端使用React/Vue，后端使用Node.js/Python，独立完成从需求分析到上线的完整流程。要求3年以上全栈开发经验，熟悉数据库设计和API开发。"
+        },
+        {
+          "title": "iOS开发工程师",
+          "description": "负责iOS应用开发与维护，使用Swift/SwiftUI框架，实现产品需求和UI设计，优化应用性能和稳定性。要求2年以上iOS开发经验，熟悉iOS SDK和App Store发布流程。"
+        },
+        {
+          "title": "Android开发工程师",
+          "description": "负责Android应用开发与维护，使用Kotlin/Jetpack Compose框架，实现产品需求，优化应用性能。要求2年以上Android开发经验，熟悉Android SDK和Google Play发布流程。"
+        },
+        {
+          "title": "数据工程师",
+          "description": "负责数据平台建设，设计ETL流程，使用Spark/Flink进行大数据处理，构建数据仓库和数据湖。要求3年以上数据工程经验，熟悉SQL/Python/Hadoop生态。"
+        },
+        {
+          "title": "DevOps工程师",
+          "description": "负责CI/CD流水线建设，容器化部署（Docker/K8s），监控告警系统搭建，自动化运维工具开发。要求3年以上运维经验，熟悉Linux/Shell/Ansible/Terraform。"
+        },
+        {
+          "title": "算法工程师",
+          "description": "负责机器学习/深度学习算法研发，模型训练与优化，推荐系统/NLP/CV方向。要求硕士及以上学历，熟悉PyTorch/TensorFlow，有实际项目经验。"
+        },
+        {
+          "title": "测试工程师",
+          "description": "负责软件质量保障，编写测试用例和自动化测试脚本，进行功能测试、性能测试和安全测试。要求2年以上测试经验，熟悉Selenium/JMeter/Pytest。"
+        }
+      ]
+    },
+    {
+      "name": "产品设计",
+      "icon": "🎨",
+      "jobs": [
+        {
+          "title": "产品经理",
+          "description": "负责产品规划和需求分析，撰写PRD文档，协调研发、设计、运营团队，推动产品从0到1落地。要求3年以上产品经理经验，有B端/C端产品经验，具备数据分析能力。"
+        },
+        {
+          "title": "UI/UX设计师",
+          "description": "负责产品界面设计和用户体验优化，制作高保真原型，进行用户研究和可用性测试。要求2年以上设计经验，熟练使用Figma/Sketch，有设计系统建设经验优先。"
+        },
+        {
+          "title": "交互设计师",
+          "description": "负责产品交互设计，梳理用户流程，制作交互原型，与产品和开发团队协作。要求2年以上交互设计经验，熟悉设计规范和无障碍设计原则。"
+        }
+      ]
+    },
+    {
+      "name": "数据与AI",
+      "icon": "🤖",
+      "jobs": [
+        {
+          "title": "数据分析师",
+          "description": "负责业务数据分析和可视化，使用SQL/Python进行数据提取和分析，制作数据报告和Dashboard。要求2年以上数据分析经验，熟悉Excel/Tableau/Power BI。"
+        },
+        {
+          "title": "AI应用工程师",
+          "description": "负责AI应用开发，集成大语言模型API，构建RAG系统和Agent工作流，优化Prompt效果。要求熟悉LangChain/OpenAI API，有AI应用开发经验优先。"
+        },
+        {
+          "title": "NLP工程师",
+          "description": "负责自然语言处理技术研发，文本分类/情感分析/信息抽取，模型微调和部署。要求硕士及以上学历，熟悉Transformer架构，有NLP项目经验。"
+        },
+        {
+          "title": "计算机视觉工程师",
+          "description": "负责计算机视觉算法研发，目标检测/图像分割/OCR，模型训练和优化。要求硕士及以上学历，熟悉OpenCV/PyTorch，有CV项目经验。"
+        }
+      ]
+    },
+    {
+      "name": "运营市场",
+      "icon": "📈",
+      "jobs": [
+        {
+          "title": "运营经理",
+          "description": "负责产品运营策略制定和执行，用户增长和留存分析，活动策划和执行，跨部门协作。要求3年以上运营经验，具备数据分析能力和项目管理能力。"
+        },
+        {
+          "title": "市场营销经理",
+          "description": "负责品牌推广和市场营销策略，线上/线下营销活动策划，渠道管理和预算控制。要求3年以上市场营销经验，有品牌建设经验优先。"
+        },
+        {
+          "title": "内容运营",
+          "description": "负责内容策划和创作，管理社交媒体账号，制定内容发布计划，分析内容效果数据。要求2年以上内容运营经验，具备优秀的写作能力。"
+        },
+        {
+          "title": "用户增长专家",
+          "description": "负责用户增长策略制定，A/B测试设计和分析，增长漏斗优化，数据驱动的增长决策。要求3年以上增长经验，熟悉数据分析工具。"
+        }
+      ]
+    },
+    {
+      "name": "管理职能",
+      "icon": "👔",
+      "jobs": [
+        {
+          "title": "技术总监/CTO",
+          "description": "负责技术团队管理和技术战略规划，制定技术路线图，管理研发团队，推动技术创新。要求8年以上技术经验，3年以上管理经验，有大型项目管理经验。"
+        },
+        {
+          "title": "项目经理",
+          "description": "负责项目全生命周期管理，制定项目计划和进度跟踪，风险管理，协调资源和跨部门沟通。要求3年以上项目管理经验，PMP认证优先。"
+        },
+        {
+          "title": "人力资源经理",
+          "description": "负责人力资源管理，招聘流程优化，员工培训与发展，绩效管理，企业文化建设。要求3年以上HR管理经验，熟悉劳动法规。"
+        },
+        {
+          "title": "财务经理",
+          "description": "负责公司财务管理和预算编制，财务报表分析，税务筹划，内部控制和审计。要求5年以上财务管理经验，持有CPA证书优先。"
+        },
+        {
+          "title": "销售经理",
+          "description": "负责销售团队管理和业绩达成，客户关系维护，销售策略制定，市场开拓。要求3年以上销售管理经验，有To B/To C销售经验。"
+        }
+      ]
+    }
+  ]
+}

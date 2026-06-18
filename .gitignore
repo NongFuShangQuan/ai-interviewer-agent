@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+
+# Virtual environments
+.venv/
+venv/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# Environment variables
+.env
+
+# Database files
+*.db
+
+# Temporary files
+_tmp_sio/
+_launcher_out.txt
+_stderr.txt
+_stdout.txt
+_garbled.json
+_live_unicode.txt
+
+# Launchers (Windows-specific helper scripts)
+_launch.vbs
+_launch2.vbs
+_run.cmd
+_run_server.py
+_start_debug.py
+start_server.bat
+start_server2.bat
